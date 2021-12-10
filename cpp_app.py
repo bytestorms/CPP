@@ -5,9 +5,14 @@ from numformat import numerize
 
 
 st.title('Continuous Pension Plan')
+st.sidebar.title("Configuration")
+one_time = st.checkbox("One Time Investment?")
 
-st.sidebar.subheader('Choose your yearly investment amount:')
-invest = int(st.sidebar.number_input("INR ", 20000, 200000, 60000, 5000))
+if not one_time:
+    st.sidebar.subheader('Choose your yearly investment amount:')
+else:
+    st.sidebar.subheader('Choose your investment amount:')
+invest = int(st.sidebar.number_input("INR ", 20000, 1000_000, 60000, 5000))
 
 st.sidebar.subheader('Choose yearly return of market index:')
 interest = st.sidebar.slider("Select Percentage:", 5.0, 15.0, 6.5, 0.5)
@@ -24,7 +29,10 @@ proj_yr = int(st.number_input("Number of years:", 5, 50, 10, 5))
 # start_yr = st.selectbox("Number of years:", list(range(5, 101, 5)), 10)
 
 st.subheader("Summary")
-st.markdown(f"Yearly Investment: `₹ {numerize(int(invest))}`")
+if not one_time:
+    st.markdown(f"Yearly Investment: `₹ {numerize(int(invest))}`")
+else:
+    st.markdown(f"Investment: `₹ {numerize(int(invest))}`")
 st.markdown(f"Yearly Return from a market index: `{interest} %` ")
 st.markdown(f"Yearly pension is collected as `{pension_frac} %` of capital")
 st.markdown(f"Projecting for `{proj_yr} years`")
@@ -33,39 +41,74 @@ st.markdown(f"Pension starts after `{pension_after} years`")
 
 st.header("Outcome")
 
-start_yr = 2022
-pension_after += start_yr
-stop_yr = proj_yr + start_yr
+if not one_time:
+    start_yr = 2022
+    pension_after += start_yr
+    stop_yr = proj_yr + start_yr
 
-results = []
+    results = []
 
-portfolio = 0
-total_invest = 0
-total_pension = 0
+    portfolio = 0
+    total_invest = 0
+    total_pension = 0
 
-for y in range(start_yr, stop_yr + 1):
-    portfolio = (1+interest/100)*portfolio + invest
-    total_invest += invest
-    
-    if y >= pension_after:
-        pension_pm = portfolio * (pension_frac/100)/12
-    else:
-        pension_pm = 0
-        
-    results.append(
-        {
-            'Year': y,
-            'Invest this year': invest,
-            'Total Invested': total_invest,
-            'Valuation': round(portfolio),
-            'Valuation after pension': round(portfolio - pension_pm*12),
-            'Pension (monthly)': round(pension_pm)
-        }
-    )
-    if y>= pension_after:
-        total_pension += pension_pm*12
-        portfolio -= pension_pm*12
+    for y in range(start_yr, stop_yr + 1):
+        portfolio = (1+interest/100)*portfolio + invest
+        total_invest += invest
 
+        if y >= pension_after:
+            pension_pm = portfolio * (pension_frac/100)/12
+        else:
+            pension_pm = 0
+
+        results.append(
+            {
+                'Year': y,
+                'Invest this year': invest,
+                'Total Invested': total_invest,
+                'Valuation': round(portfolio),
+                'Valuation after pension': round(portfolio - pension_pm*12),
+                'Pension (monthly)': round(pension_pm)
+            }
+        )
+        if y>= pension_after:
+            total_pension += pension_pm*12
+            portfolio -= pension_pm*12
+else:
+    start_yr = 2022
+    pension_after += start_yr
+    stop_yr = proj_yr + start_yr
+
+    results = []
+
+    portfolio = invest
+    total_invest = invest
+    total_pension = 0
+
+    for y in range(start_yr, stop_yr + 1):
+        portfolio = (1+interest/100)*portfolio
+        total_invest += 0
+
+        if y >= pension_after:
+            pension_pm = portfolio * (pension_frac/100)/12
+        else:
+            pension_pm = 0
+
+        results.append(
+            {
+                'Year': y,
+                'Invest this year': invest,
+                'Total Invested': total_invest,
+                'Valuation': round(portfolio),
+                'Valuation after pension': round(portfolio - pension_pm*12),
+                'Pension (monthly)': round(pension_pm)
+            }
+        )
+        if y>= pension_after:
+            total_pension += pension_pm*12
+            portfolio -= pension_pm*12
+            
+# Show results
 df = pd.DataFrame(results)
 df = df.set_index("Year")
 st.table(df)
