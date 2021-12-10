@@ -22,7 +22,10 @@ st.sidebar.subheader('How many years before pension start?')
 pension_after = st.sidebar.slider("Select year:", 4, 40, 5, 1)
 
 st.sidebar.subheader('Percentage of capital to use as pension:')
-pension_frac = st.sidebar.slider("Select Percentage:", 5., 15., 10., 0.1)
+if not one_time:
+    pension_frac = st.sidebar.slider("Select Percentage:", 5., 15., 10., 0.1)
+else:
+    pension_frac = st.sidebar.slider("Select Percentage:", 5., 15., 6., 0.1)
 
 st.subheader('Length of projection:')
 proj_yr = int(st.number_input("Number of years:", 5, 50, 10, 5))
@@ -41,8 +44,8 @@ st.markdown(f"Pension starts after `{pension_after} years`")
 
 st.header("Outcome")
 
-if not one_time:
-    start_yr = 2022
+start_yr = 2022
+if not one_time:    
     pension_after += start_yr
     stop_yr = proj_yr + start_yr
 
@@ -75,7 +78,6 @@ if not one_time:
             total_pension += pension_pm*12
             portfolio -= pension_pm*12
 else:
-    start_yr = 2022
     pension_after += start_yr
     stop_yr = proj_yr + start_yr
 
@@ -97,7 +99,7 @@ else:
         results.append(
             {
                 'Year': y,
-                'Invest this year': invest,
+                'Invest this year': invest if y == start_yr else 0,
                 'Total Invested': total_invest,
                 'Valuation': round(portfolio),
                 'Valuation after pension': round(portfolio - pension_pm*12),
