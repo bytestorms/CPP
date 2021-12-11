@@ -15,7 +15,7 @@ else:
 invest = int(st.sidebar.number_input("INR ", 20000, 1000_000, 60000, 5000))
 
 st.sidebar.subheader('Choose yearly return of market index:')
-interest = st.sidebar.number_input("Select Percentage:", 5.0, 15.0, 6.5, 0.5)
+interest = round(st.sidebar.number_input("Select Percentage:", 5.0, 15.0, 6.5, 0.5), 1)
 st.sidebar.text(f"Selected Rate of return: {interest} %")
 
 st.sidebar.subheader('How many years before pension start?')
@@ -23,9 +23,9 @@ pension_after = st.sidebar.number_input("Select year:", 4, 40, 5, 1)
 
 st.sidebar.subheader('Percentage of capital to use as pension:')
 if not one_time:
-    pension_frac = st.sidebar.number_input("Select Percentage:", 5., 15., 10., 0.1)
+    pension_frac = round(st.sidebar.number_input("Select Percentage:", 5., 15., 10., 0.1), 1)
 else:
-    pension_frac = st.sidebar.number_input("Select Percentage:", 5., 15., 6., 0.1)
+    pension_frac = round(st.sidebar.number_input("Select Percentage:", 5., 15., 6., 0.1), 1)
 
 st.subheader('Length of projection:')
 proj_yr = int(st.number_input("Number of years:", 5, 50, 10, 5))
