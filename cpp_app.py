@@ -45,7 +45,8 @@ st.markdown(f"Pension starts after `{pension_after} years`")
 st.header("Outcome")
 
 start_yr = 2022
-if not one_time:    
+if not one_time:   
+    # Regular investment (Invest every year)
     pension_after += start_yr
     stop_yr = proj_yr + start_yr
 
@@ -78,6 +79,7 @@ if not one_time:
             total_pension += pension_pm*12
             portfolio -= pension_pm*12
 else:
+    # One time investment
     pension_after += start_yr
     stop_yr = proj_yr + start_yr
 
@@ -88,7 +90,8 @@ else:
     total_pension = 0
 
     for y in range(start_yr, stop_yr + 1):
-        portfolio = (1+interest/100)*portfolio
+        if y > start_yr:
+            portfolio = (1+interest/100)*portfolio
         total_invest += 0
 
         if y >= pension_after:
